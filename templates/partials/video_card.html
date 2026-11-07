@@ -1,0 +1,11 @@
+<article class="video-card">
+  <a class="thumb-wrap" href="{% url 'video_detail' video.pk %}" aria-label="{{ video.title }}">
+    {% if video.thumbnail %}<img class="video-thumb" src="{% url 'video_thumbnail' video.pk %}" alt="صورة مصغرة: {{ video.title }}" loading="lazy">{% else %}<div class="thumb-placeholder"><i class="bi bi-play-circle"></i></div>{% endif %}
+    <span class="duration">{{ video.duration_label }}</span>
+  </a>
+  <div class="video-card-info">
+    <a class="channel-avatar" href="{{ video.channel.get_absolute_url }}">{% if video.channel.avatar %}<img src="{{ video.channel.avatar.url }}" alt="">{% else %}<span>{{ video.channel.name|first }}</span>{% endif %}</a>
+    <div class="video-card-copy"><a class="video-title" href="{% url 'video_detail' video.pk %}">{{ video.title }}</a><a class="channel-name" href="{{ video.channel.get_absolute_url }}">{{ video.channel.name }}</a><div class="video-meta"><span>{{ video.views_count }} مشاهدة</span><span>·</span><time>{{ video.published_at|date:'Y-m-d'|default:'قيد النشر' }}</time></div></div>
+    {% if user.is_authenticated and video.channel.owner_id == user.id %}<a class="icon-button card-more" href="{% url 'edit_video' video.pk %}" aria-label="تعديل الفيديو"><i class="bi bi-three-dots-vertical"></i></a>{% endif %}
+  </div>
+</article>

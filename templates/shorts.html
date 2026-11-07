@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-heading"><div><h1>shorts </h1></div></section>
+<div class="shorts-feed">
+  {% for video in video_list %}
+  <article class="short-card">
+    <video controls playsinline preload="none" poster="{% if video.thumbnail %}{% url 'video_thumbnail' video.pk %}{% endif %}"><source src="{% url 'stream_video' video.pk %}" type="video/mp4"></video>
+    <div class="short-overlay"><a href="{% url 'channel_detail' video.channel.slug %}">{{ video.channel.name }}</a><h2><a href="{% url 'video_detail' video.pk %}">{{ video.title }}</a></h2><p>{{ video.views_count }} مشاهدة</p></div>
+    <div class="short-actions">
+      <form method="post" action="{% url 'like' video.pk %}">{% csrf_token %}<button aria-label="إعجاب"><i class="bi bi-hand-thumbs-up"></i></button></form>
+      <a href="{% url 'video_detail' video.pk %}#comments" aria-label="التعليقات"><i class="bi bi-chat"></i></a>
+      <button type="button" data-copy-url="{{ request.scheme }}://{{ request.get_host }}{% url 'video_detail' video.pk %}" aria-label="مشاركة الفيديو"><i class="bi bi-share"></i></button>
+    </div>
+  </article>
+  {% empty %}<div class="empty-state"><h2>لا توجد مقاطع قصيرة بعد</h2><p>ستظهر هنا الفيديوهات العمودية المنشورة التي لا تتجاوز دقيقة.</p></div>{% endfor %}
+</div>
+{% if page_obj.has_next %}<a class="btn btn-outline-accent" href="?page={{ page_obj.next_page_number }}">تحميل المزيد</a>{% endif %}
+{% endblock %}

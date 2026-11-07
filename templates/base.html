@@ -1,0 +1,38 @@
+{% load static %}
+<!doctype html>
+<html lang="{% if user.is_authenticated %}{{ user.preferred_language }}{% else %}ar{% endif %}" dir="{% if user.is_authenticated and user.preferred_language == 'en' %}ltr{% else %}rtl{% endif %}" data-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}{{ page_title|default:brand_name }} · {{ brand_name }}{% endblock %}</title>
+  <link rel="icon" href="{% static 'images/vidora-mark.svg' %}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+  {% if user.is_authenticated and user.preferred_language == 'en' %}<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">{% else %}<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">{% endif %}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{% static 'css/vidora.css' %}" rel="stylesheet">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<header class="topbar">
+  <button class="icon-button menu-trigger" type="button" aria-label="فتح القائمة" aria-controls="sidebar" aria-expanded="false"><i class="bi bi-list"></i></button>
+  <a class="brand" href="{% url 'home' %}" aria-label="{{ brand_name }} - الرئيسية"><img src="{% static 'images/vidora-mark.svg' %}" alt="" width="34" height="34"><span>{{ brand_name }}</span></a>
+  <form class="search-form" method="get" action="{% url 'search' %}" role="search"><input name="q" value="{{ search_query|default:'' }}" placeholder="ابحث عن فيديو أو قناة" aria-label="البحث"><button aria-label="بحث"><i class="bi bi-search"></i></button></form>
+  <nav class="top-actions" aria-label="إجراءات الحساب">
+  <a class="btn btn-accent btn-sm d-inline-flex align-items-center justify-content-center gap-2" href="{% url 'upload_video' %}">
+  <i class="bi bi-plus-lg"></i>
+  <span>إنشاء</span>
+</a>
+    {% if user.is_authenticated %}
+      <a class="icon-button position-relative" href="{% url 'notifications' %}" aria-label="الإشعارات"><i class="bi bi-bell"></i>{% if unread_notification_count %}<span class="notification-dot">{{ unread_notification_count }}</span>{% endif %}</a>
+      <div class="dropdown"><button class="avatar-button" data-bs-toggle="dropdown" aria-label="قائمة الحساب">{% if user.avatar %}<img src="{{ user.avatar.url }}" alt="">{% else %}<span>{{ user.username|first|upper }}</span>{% endif %}</button><ul class="dropdown-menu dropdown-menu-end"><li><span class="dropdown-item-text">{{ user.username }}</span></li><li><a class="dropdown-item" href="{% url 'settings' %}">إعدادات الحساب</a></li><li><a class="dropdown-item" href="{% url 'dashboard' %}">استوديو القناة</a></li>{% if user.is_staff %}<li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">إدارة المنصة</a></li>{% endif %}<li><hr class="dropdown-divider"></li><li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="dropdown-item">تسجيل الخروج</button></form></li></ul></div>
+    {% else %}<a class="btn btn-outline-accent btn-sm" href="{% url 'login' %}">تسجيل الدخول</a>{% endif %}
+    <button class="icon-button theme-toggle" type="button" aria-label="تغيير السمة"><i class="bi bi-sun"></i></button>
+  </nav>
+</header>
+<div class="app-shell"><aside class="sidebar" id="sidebar">{% include 'partials/sidebar.html' %}</aside><main class="main-content">
+  {% if messages %}<div class="message-stack">{% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="status">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button></div>{% endfor %}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script><script src="{% static 'js/vidora.js' %}" defer></script>{% block scripts %}{% endblock %}
+</body></html>

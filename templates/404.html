@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}الصفحة غير موجودة · {{ brand_name }}{% endblock %}{% block content %}<section class="empty-state error-state"><span class="error-code">404</span><h1>لم نعثر على هذه الصفحة</h1><p>قد يكون الرابط قد تغيّر أو لم يعد المحتوى متاحًا.</p><a class="btn btn-accent" href="{% url 'home' %}">العودة إلى الرئيسية</a></section>{% endblock %}
